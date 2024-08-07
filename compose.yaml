@@ -63,10 +63,10 @@ services:
       - frontnet
     depends_on:
       - backend
-    volumes:
-      - ./frontend:/app # Mount the frontend source code
-      - /app/node_modules # Ensure node_modules inside container isn't overwritten
-    command: npm run dev # Use the Next.js development server
+    # volumes:
+    #   - ./frontend:/app # Mount the frontend source code
+    #   - /app/node_modules # Ensure node_modules inside container isn't overwritten
+    # command: npm run dev # Use the Next.js development server
 
 volumes:
   db-data:
