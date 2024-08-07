@@ -23,11 +23,9 @@ FROM node:18
 WORKDIR /app
 
 # Copy only the necessary files
-COPY --from=builder /app/next.config.mjs ./
-COPY --from=builder /app/package.json ./
-COPY --from=builder /app/package-lock.json ./
-COPY --from=builder /app/public ./public
+COPY --from=builder /app/package.json /app/package-lock.json ./
 COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/public ./public
 COPY --from=builder /app/node_modules ./node_modules
 
 # Expose the port the app runs on
