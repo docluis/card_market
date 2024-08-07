@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1.4
-FROM --platform=$BUILDPLATFORM python:3.12-alpine AS builder
+FROM python:3.12-alpine AS base
 
 WORKDIR /code
 COPY requirements.txt /code
@@ -8,28 +8,23 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 
 COPY . .
 
-ENV FLASK_APP hello.py
-ENV FLASK_ENV development
-ENV FLASK_RUN_PORT 8000
-ENV FLASK_RUN_HOST 0.0.0.0
+ENV FLASK_APP=hello.py
+ENV FLASK_ENV=development
+ENV FLASK_RUN_PORT=8000
+ENV FLASK_RUN_HOST=0.0.0.0
 
 EXPOSE 8000
 
-CMD ["flask", "run"]
+# Use the flask run command with the --reload flag for development
+CMD ["flask", "run", "--reload"]
 
-FROM builder AS dev-envs
+FROM base AS dev-envs
 
-RUN <<EOF
-apk update
-apk add git
-EOF
+RUN apk update && apk add git
 
-RUN <<EOF
-addgroup -S docker
-adduser -S --shell /bin/bash --ingroup docker vscode
-EOF
+RUN addgroup -S docker && adduser -S --shell /bin/bash --ingroup docker vscode
 
-# install Docker tools (cli, buildx, compose)
+# Install Docker tools (cli, buildx, compose)
 COPY --from=gloursdocker/docker / /
 
-CMD ["flask", "run"]
+CMD ["flask", "run", "--reload"]

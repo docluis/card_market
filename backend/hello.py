@@ -51,7 +51,13 @@ def listBlog():
     if not conn:
         conn = DBManager(password_file='/run/secrets/db-password')
         conn.populate_db()
-    rec = conn.query_titles()
+    try:
+        rec = conn.query_titles()
+    except:
+        # if the connection is lost, we need to re-connect
+        conn = DBManager(password_file='/run/secrets/db-password')
+        rec = conn.query_titles()
+
 
     response = ''
     for c in rec:
@@ -64,7 +70,12 @@ def listCards():
     if not conn:
         conn = DBManager(password_file='/run/secrets/db-password')
         conn.populate_db()
-    rec = conn.query_cards()
+    try:
+        rec = conn.query_cards()
+    except:
+        # if the connection is lost, we need to re-connect
+        conn = DBManager(password_file='/run/secrets/db-password')
+        rec = conn.query_cards()
 
     # return as json
     response = []

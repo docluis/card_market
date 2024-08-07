@@ -1,17 +1,10 @@
 services:
   db:
-    # We use a mariadb image which supports both amd64 & arm64 architecture
     image: mariadb:10-focal
-    # If you really want to use MySQL, uncomment the following line
-    #image: mysql:8
     command: "--default-authentication-plugin=mysql_native_password"
     restart: always
     healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          'mysqladmin ping -h 127.0.0.1 --password="$$(cat /run/secrets/db-password)" --silent',
-        ]
+      test: ["CMD-SHELL", 'mysqladmin ping -h 127.0.0.1 --password="$$(cat /run/secrets/db-password)" --silent']
       interval: 3s
       retries: 5
       start_period: 30s
@@ -26,12 +19,10 @@ services:
       - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/db-password
     expose:
       - 3306
-      - 33060
 
   backend:
     build:
       context: backend
-      target: builder
     restart: always
     secrets:
       - db-password
@@ -43,6 +34,11 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    volumes:
+      - ./backend:/code  # Bind mount for hot reloading
+    environment:
+      - FLASK_ENV=development
+      - FLASK_APP=hello.py
 
   proxy:
     build: proxy
@@ -55,7 +51,8 @@ services:
       - frontnet
 
   frontend:
-    build: frontend
+    build:
+      context: frontend
     restart: always
     ports:
       - 3000:3000
@@ -63,10 +60,8 @@ services:
       - frontnet
     depends_on:
       - backend
-    # volumes:
-    #   - ./frontend:/app # Mount the frontend source code
-    #   - /app/node_modules # Ensure node_modules inside container isn't overwritten
-    # command: npm run dev # Use the Next.js development server
+    volumes:
+      - ./frontend:/app  # Bind mount for hot reloading
 
 volumes:
   db-data:
