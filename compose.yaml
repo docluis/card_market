@@ -4,10 +4,14 @@ services:
     image: mariadb:10-focal
     # If you really want to use MySQL, uncomment the following line
     #image: mysql:8
-    command: '--default-authentication-plugin=mysql_native_password'
+    command: "--default-authentication-plugin=mysql_native_password"
     restart: always
     healthcheck:
-      test: ['CMD-SHELL', 'mysqladmin ping -h 127.0.0.1 --password="$$(cat /run/secrets/db-password)" --silent']
+      test:
+        [
+          "CMD-SHELL",
+          'mysqladmin ping -h 127.0.0.1 --password="$$(cat /run/secrets/db-password)" --silent',
+        ]
       interval: 3s
       retries: 5
       start_period: 30s
@@ -45,7 +49,7 @@ services:
     restart: always
     ports:
       - 80:80
-    depends_on: 
+    depends_on:
       - backend
     networks:
       - frontnet
@@ -59,6 +63,10 @@ services:
       - frontnet
     depends_on:
       - backend
+    volumes:
+      - ./frontend:/app # Mount the frontend source code
+      - /app/node_modules # Ensure node_modules inside container isn't overwritten
+    command: npm run dev # Use the Next.js development server
 
 volumes:
   db-data:
