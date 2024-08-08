@@ -6,8 +6,8 @@ export const siteConfig = {
   description: "Buy beautiful playing cards for every game.",
   navItems: [
     {
-      label: "Home",
-      href: "/",
+      label: "Search",
+      href: "/search",
     },
     {
       label: "Blog",

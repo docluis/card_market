@@ -10,18 +10,10 @@ import {
   Image,
   Skeleton,
 } from "@nextui-org/react";
-// import {Spacer} from "@nextui-org/spacer";
-
-// Define the Card type to represent the structure of the card data
-type Card = {
-  title: string;
-  info: string;
-  price: number;
-  imageURL: string;
-};
+import { Card as CardType } from "@/components/types";
 
 export default function CardPage() {
-  const [card, setCard] = useState<Card | null>(null);
+  const [card, setCard] = useState<CardType | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
 
   const searchParams = useSearchParams();
@@ -29,7 +21,7 @@ export default function CardPage() {
 
   useEffect(() => {
     if (id) {
-      fetch(`/api/cards/${id}`)
+      fetch(`/api/card/${id}`)
         .then((response) => response.json())
         .then((data) => {
           setCard(data.card);
@@ -41,9 +33,9 @@ export default function CardPage() {
   }, [id]);
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-row gap-10">
       <Card className="w-[300px] space-y-5 p-4" radius="lg">
-        <Skeleton isLoaded={isLoaded} className="w-full h-[400px] rounded-lg">
+        <Skeleton isLoaded={isLoaded} className="w-full h-full rounded-lg">
           <Image
             src={card?.imageURL}
             alt={card?.title}
@@ -52,18 +44,21 @@ export default function CardPage() {
             className="rounded-lg"
           />
         </Skeleton>
-        <div className="space-y-3">
-          <Skeleton isLoaded={isLoaded} className="w-3/5 rounded-lg">
-            <h3 className="text-lg font-semibold">{card?.title}</h3>
-          </Skeleton>
-          <Skeleton isLoaded={isLoaded} className="w-3/5 rounded-lg">
-            <p className="text-sm text-secondary-500">{card?.info}</p>
-          </Skeleton>
-          <Skeleton isLoaded={isLoaded} className="w-3/5 rounded-lg">
+      </Card>
+      <div className="flex flex-col gap-3 w-[400px]">
+        <Skeleton isLoaded={isLoaded} className="w-3/5 h-[32px] rounded-lg">
+          <h3 className="text-lg font-semibold">{card?.title}</h3>
+        </Skeleton>
+        <Skeleton isLoaded={isLoaded} className="w-3/5 h-[64px] rounded-lg">
+          <p className="text-sm text-secondary-500">{card?.info}</p>
+        </Skeleton>
+        <div className="flex flex-row gap-3">
+          <Skeleton isLoaded={isLoaded} className="w-1/5 rounded-lg">
             <p className="text-lg text-secondary-500">${card?.price}</p>
           </Skeleton>
+          <Button>Buy now</Button>
         </div>
-      </Card>
+      </div>
     </div>
   );
 }

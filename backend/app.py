@@ -7,49 +7,78 @@ server = Flask(__name__)
 conn = None
 
 
-def connect_db():
-    global conn
+def connect_db(conn):
+    # global conn
     if not conn:
         conn = DBManager(password_file="/run/secrets/db-password")
         # conn.populate_db()
     return conn
 
 
-def reconnect_db():
+# add route for all cards with pagination, so parameter for page and size
+@server.route("/cards/<int:page>/<int:size>")
+def getCards(page, size):
     global conn
-    conn = DBManager(password_file="/run/secrets/db-password")
-    # conn.populate_db()
-
-
-@server.route("/cards")
-def listCards():
-    global conn
-    conn = connect_db()
-    try:
-        rec = conn.query_cards()
-    except:
-        reconnect_db()
-        rec = conn.query_cards()
+    conn = connect_db(conn)
+    recs = conn.query_cards(page, size)
 
     # return as json
-    response = []
-    for c in rec:
-        response.append({"id": c[0], "title": c[1], "info": c[2], "price": c[3]})
-    return {"cards": response}
+    return {
+        "cards": [
+            {
+                "id": rec[0],
+                "title": rec[1],
+                "info": rec[2],
+                "price": rec[3],
+                "imageURL": rec[4],
+            }
+            for rec in recs
+        ]
+    }
 
 
-@server.route("/cards/<int:id>")
+@server.route("/card/<int:id>")
 def getCard(id):
     global conn
-    conn = connect_db()
-    try:
-        rec = conn.query_card(id)
-    except:
-        reconnect_db()
-        rec = conn.query_card(id)
+    conn = connect_db(conn)
+    rec = conn.query_card(id)
+
+    import time
+
+    time.sleep(1)
 
     # return as json
-    return {"card": {"id": rec[0], "title": rec[1], "info": rec[2], "price": rec[3], "imageURL": rec[4]}}
+    return {
+        "card": {
+            "id": rec[0],
+            "title": rec[1],
+            "info": rec[2],
+            "price": rec[3],
+            "imageURL": rec[4],
+        }
+    }
+
+
+# search cards
+@server.route("/search/<string:search_term>/<int:size>")
+def searchCard(search_term, size):
+    global conn
+    conn = connect_db(conn)
+    recs = conn.search_card(search_term, size)
+
+    # return as json
+    return {
+        "cards": [
+            {
+                "id": rec[0],
+                "title": rec[1],
+                "info": rec[2],
+                "price": rec[3],
+                "imageURL": rec[4],
+            }
+            for rec in recs
+        ]
+    }
 
 
 if __name__ == "__main__":
