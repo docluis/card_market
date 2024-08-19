@@ -1,6 +1,7 @@
 import os
-from flask import Flask
+from flask import Flask, request, jsonify
 from src.dbmanager import DBManager
+from src.jwt import token_required
 
 
 server = Flask(__name__)
@@ -77,6 +78,58 @@ def searchCard(search_term, size):
                 "imageURL": rec[4],
             }
             for rec in recs
+        ]
+    }
+
+
+# register user with email, username and password in body
+@server.route("/register", methods=["POST"])
+def register():
+    global conn
+    conn = connect_db(conn)
+    data = request.json
+    success = conn.create_user(data["email"], data["username"], data["password"])
+    if success:
+        return {"message": "User created"}, 201
+    else:
+        return {"message": "User creation failed"}, 400
+
+# login user with username and password in body
+@server.route("/login", methods=["POST"])
+def login():
+    global conn
+    conn = connect_db(conn)
+    data = request.json
+    token = conn.login(data["username"], data["password"])
+    if token:
+        response = jsonify({"message": "Login successful"})
+        response.status_code = 200
+        response.headers["Authorization"] = token
+        return response
+    else:
+        return {"message": "Login failed"}, 401
+
+
+# logout user
+@server.route("/logout", methods=["POST"])
+@token_required
+def logout(current_user):
+    response = jsonify({"message": "Logout successful"})
+    response.status_code = 200
+    response.headers["Authorization"] = ""
+    return response
+
+# get all users
+@server.route("/users")
+def getUsers():
+    global conn
+    conn = connect_db(conn)
+    recs = conn.get_users()
+
+    # return as json
+    return {
+        "users": [
+            {"id": rec[0], "email": rec[1], "username": rec[2]} for rec in recs
         ]
     }
 
