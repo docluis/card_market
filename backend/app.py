@@ -100,6 +100,7 @@ def login():
     global conn
     conn = connect_db(conn)
     data = request.json
+    print(data)
     token = conn.login(data["username"], data["password"])
     if token:
         response = jsonify({"message": "Login successful"})
