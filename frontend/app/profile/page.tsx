@@ -17,7 +17,6 @@ import { User } from "@/components/types";
 export default function profilePage() {
   const router = useRouter();
   const setStoreUsername = useStore((state: any) => state.setUsername);
-  // const [user, setUser] = useState<User | null>(null);
   const [localUser, setLocalUser] = useState<User | null>(null);
 
   const handleLogout = () => {
