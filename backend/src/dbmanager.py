@@ -60,15 +60,22 @@ class DBManager:
 
         with self.get_cursor() as cursor:
             cursor.execute("DROP TABLE IF EXISTS users")
-            
+
             cursor.execute(
                 """
                 CREATE TABLE users (
                     id INT AUTO_INCREMENT PRIMARY KEY,
                     email VARCHAR(255) UNIQUE,
-                    username VARCHAR(255),
+                    username VARCHAR(255) UNIQUE,
                     password VARCHAR(255),
-                    salt VARCHAR(255)
+                    salt VARCHAR(255),
+                    full_name VARCHAR(255),
+                    address_street VARCHAR(255),
+                    address_number VARCHAR(10),
+                    address_extra VARCHAR(255),
+                    address_zip VARCHAR(10),
+                    address_city VARCHAR(255),
+                    address_country VARCHAR(255)
                 )
                 """
             )
@@ -106,8 +113,8 @@ class DBManager:
             with self.get_cursor() as cursor:
                 cursor.execute(
                     """
-                    INSERT INTO users (email, username, password, salt)
-                    VALUES (%s, %s, %s, %s)
+                    INSERT INTO users (email, username, password, salt, full_name, address_street, address_number, address_extra, address_zip, address_city, address_country)
+                    VALUES (%s, %s, %s, %s, '', '', '', '', '', '', '')
                     """,
                     (
                         email,
@@ -121,6 +128,38 @@ class DBManager:
         except mysql.connector.Error as err:
             print(f"Error: {err}")
             return False
+
+    def update_user(
+        self,
+        username,
+        full_name,
+        address_street,
+        address_number,
+        address_extra,
+        address_zip,
+        address_city,
+        address_country,
+    ):
+        with self.get_cursor() as cursor:
+            cursor.execute(
+                """
+                UPDATE users
+                SET full_name = %s, address_street = %s, address_number = %s, address_extra = %s, address_zip = %s, address_city = %s, address_country = %s
+                WHERE username = %s
+                """,
+                (
+                    full_name,
+                    address_street,
+                    address_number,
+                    address_extra,
+                    address_zip,
+                    address_city,
+                    address_country,
+                    username,
+                ),
+            )
+            cursor._connection.commit()
+            return True
 
     def get_users(self):
         with self.get_cursor() as cursor:
@@ -142,3 +181,24 @@ class DBManager:
                     data = {"username": username}
                     return generate_jwt_token(data)
         return None
+
+    def get_user(self, username):
+        with self.get_cursor() as cursor:
+            cursor.execute(
+                """
+                SELECT
+                    id,
+                    email,
+                    username,
+                    address_street,
+                    address_number,
+                    address_extra,
+                    address_zip,
+                    address_city,
+                    address_country,
+                    full_name
+                FROM users WHERE username = %s
+                """,
+                (username,),
+            )
+            return cursor.fetchone()

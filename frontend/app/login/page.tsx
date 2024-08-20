@@ -13,6 +13,7 @@ import {
 } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import useStore from "@/stores/useStore";
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
@@ -20,6 +21,7 @@ export default function LoginPage() {
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
+  const setStoreUsername = useStore((state: any) => state.setUsername);
 
   const handleLogin = () => {
     setIsSubmitting(true);
@@ -36,21 +38,20 @@ export default function LoginPage() {
     })
       .then((response) => {
         setIsSubmitting(false);
-        if (response.status === 201) {
-          // router.push("/login");
-          console.log("User login successfully");
-        } else {
+        if (response.ok) {
           return response.json();
+        } else {
+          throw new Error("Login failed");
         }
       })
       .then((data) => {
-        if (data) {
-          setMessage(data.message);
-        }
+        console.log("Login successful:", data);
+        setStoreUsername(username);
+        router.push("/");
       })
       .catch((error) => {
-        setIsSubmitting(false);
-        console.error("Error registering user:", error);
+        console.error("Login error:", error);
+        setMessage("Login failed");
       });
   };
 

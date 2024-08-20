@@ -17,8 +17,8 @@ def generate_jwt_token(data):
 def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-        # token in authorization header
-        token = request.headers.get("Authorization")
+        # token in cookies
+        token = request.cookies.get("auth_token")
         if not token:
             return jsonify({"message": "Token is missing!"}), 403
         try:

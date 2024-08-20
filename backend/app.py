@@ -94,6 +94,7 @@ def register():
     else:
         return {"message": "User creation failed"}, 400
 
+
 # login user with username and password in body
 @server.route("/login", methods=["POST"])
 def login():
@@ -105,7 +106,9 @@ def login():
     if token:
         response = jsonify({"message": "Login successful"})
         response.status_code = 200
-        response.headers["Authorization"] = token
+        # set cookie with token
+        response.set_cookie(key="auth_token", value=token, httponly=True)
+
         return response
     else:
         return {"message": "Login failed"}, 401
@@ -115,10 +118,15 @@ def login():
 @server.route("/logout", methods=["POST"])
 @token_required
 def logout(current_user):
-    response = jsonify({"message": "Logout successful"})
-    response.status_code = 200
-    response.headers["Authorization"] = ""
-    return response
+    token = request.cookies.get("auth_token")
+    if token:
+        response = jsonify({"message": "Logout successful"})
+        response.status_code = 200
+        # remove cookie
+        response.set_cookie(key="auth_token", value="", expires=0)
+
+        return response
+
 
 # get all users
 @server.route("/users")
@@ -129,10 +137,59 @@ def getUsers():
 
     # return as json
     return {
-        "users": [
-            {"id": rec[0], "email": rec[1], "username": rec[2]} for rec in recs
-        ]
+        "users": [{"id": rec[0], "email": rec[1], "username": rec[2]} for rec in recs]
     }
+
+
+@server.route("/me", methods=["GET"])
+@token_required
+def me(current_user):
+    global conn
+    conn = connect_db(conn)
+    rec = conn.get_user(current_user)
+
+    if rec:
+        return jsonify(
+            {
+                "user": {
+                    "id": rec[0],
+                    "email": rec[1],
+                    "username": rec[2],
+                    "address_street": rec[3],
+                    "address_number": rec[4],
+                    "address_extra": rec[5],
+                    "address_zip": rec[6],
+                    "address_city": rec[7],
+                    "address_country": rec[8],
+                    "full_name": rec[9],
+                }
+            }
+        )
+    else:
+        return {"message": "User not found"}, 404
+
+
+@server.route("/me", methods=["PUT"])
+@token_required
+def update_user(current_user):
+    global conn
+    conn = connect_db(conn)
+    data = request.json
+    user = data["user"]
+    success = conn.update_user(
+        current_user,
+        user["full_name"],
+        user["address_street"],
+        user["address_number"],
+        user["address_extra"],
+        user["address_zip"],
+        user["address_city"],
+        user["address_country"],
+    )
+    if success:
+        return {"message": "User updated"}, 200
+    else:
+        return {"message": "User update failed"}, 400
 
 
 if __name__ == "__main__":
