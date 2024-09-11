@@ -24,3 +24,10 @@ export type User = {
   address_city: string;
   address_country: string;
 };
+
+export type Contact = {
+  full_name: string;
+  email: string;
+  phone_number: string;
+  message: string;
+};

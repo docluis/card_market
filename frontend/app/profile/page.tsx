@@ -14,7 +14,7 @@ import useStore from "@/stores/useStore";
 import { useEffect, useState } from "react";
 import { User } from "@/components/types";
 
-export default function profilePage() {
+export default function ProfilePage() {
   const router = useRouter();
   const setStoreUsername = useStore((state: any) => state.setUsername);
   const [localUser, setLocalUser] = useState<User | null>(null);
