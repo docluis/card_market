@@ -61,7 +61,7 @@ services:
     depends_on:
       - backend
     volumes:
-      - ./frontend:/app  # Bind mount for hot reloading
+      - ./frontend/app:/app/app  # Bind mount for hot reloading
 
 volumes:
   db-data:
