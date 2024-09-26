@@ -18,7 +18,7 @@ export default function BlogPage() {
       >
         <Card>
           <CardHeader>
-             <h3 className="font-bold text-lg text-blue-600">Latest Market Trends</h3>
+             <h3 className="font-bold text-lg text-green-600">Latest Market Trends</h3>
           </CardHeader>
           <CardBody>
             <p>
@@ -27,13 +27,13 @@ export default function BlogPage() {
             </p>
           </CardBody>
           <CardFooter>
-            <p>Read more...</p>
+            <p>...</p>
           </CardFooter>
         </Card>
 
         <Card>
           <CardHeader>
-             <h3 className="font-bold text-lg text-blue-600">Collector Tips & Tricks</h3>
+             <h3 className="font-bold text-lg text-green-600">Collector Tips & Tricks</h3>
           </CardHeader>
           <CardBody>
             <p>
@@ -42,13 +42,13 @@ export default function BlogPage() {
             </p>
           </CardBody>
           <CardFooter>
-            <p>Read more...</p>
+            <p>...</p>
           </CardFooter>
         </Card>
 
         <Card>
           <CardHeader>
-             <h3 className="font-bold text-lg text-blue-600">Spotlight on Rare Finds</h3>
+             <h3 className="font-bold text-lg text-green-600">Spotlight on Rare Finds</h3>
           </CardHeader>
           <CardBody>
             <p>
@@ -57,7 +57,7 @@ export default function BlogPage() {
             </p>
           </CardBody>
           <CardFooter>
-            <p>Read more...</p>
+            <p>...</p>
           </CardFooter>
         </Card>
       </div>

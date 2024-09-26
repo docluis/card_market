@@ -27,8 +27,9 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="flex items-center justify-center ">
-      {/* user info */}
+    <div className="flex flex-col items-center">
+      <div className=" flex items-center justify-center">
+        {/* user info */}
         <Card className="w-full max-w-md shadow-lg">
           <CardHeader>
             <h1 className="text-2xl">Contact - WIP!</h1>
@@ -73,6 +74,13 @@ export default function ContactPage() {
             <Button onClick={handleSubmitContactForm}>Submit</Button>
           </CardFooter>
         </Card>
+      </div>
+      <div>
+      <p className="w-full mt-8">
+        Dear user, this page is under construction, thus the form may not work
+        as expected.
+      </p>
+      </div>
     </div>
   );
 }
