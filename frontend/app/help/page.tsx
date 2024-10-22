@@ -10,32 +10,30 @@ import {
   Textarea,
 } from "@nextui-org/react";
 import { useEffect, useState } from "react";
-// import { Help } from "@/components/types";
+import { Help } from "@/components/types";
 import { title } from "@/components/primitives";
 
 export default function HelpPage() {
-  // const emptyHelp: Help = {
-  //   full_name: "",
-  //   phone_number: "",
-  //   email: "",
-  //   message: "",
-  // };
-  // const [localUser, setLocalUser] = useState<Help>(emptyHelp);
-
   const [step, setStep] = useState(1);
-  const [message, setMessage] = useState("");
-  const [email, setEmail] = useState("");
-  const [name, setName] = useState("");
+
+  const emptyHelp: Help = {
+    message: "",
+    email: "",
+    name: "",
+  };
+  const [help, setHelp] = useState<Help>(emptyHelp);
 
   const handleNext = () => {
-    if (message.trim()) {
-      setStep(2); // Proceed to the next step if message is filled in
+    if (help.message.trim()) {
+      setStep(2);
     }
   };
 
   const handleSubmit = () => {
-    // Handle form submission logic here
-    console.log({ message, email, name });
+    // TODO: send help request
+    console.log({ help });
+    setHelp(emptyHelp);
+    setStep(1);
     alert("Form submitted!");
   };
 
@@ -48,13 +46,13 @@ export default function HelpPage() {
             <>
               <Textarea
                 placeholder="Describe your issue..."
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
+                value={help.message}
+                onChange={(e) => setHelp({ ...help, message: e.target.value })}
                 fullWidth
                 className="mb-4"
                 minRows={7}
               />
-              <Button onClick={handleNext} disabled={!message.trim()}>
+              <Button onClick={handleNext} disabled={!help.message.trim()}>
                 Next
               </Button>
             </>
@@ -63,27 +61,26 @@ export default function HelpPage() {
               <Input
                 label="Name"
                 placeholder="Enter your name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                value={help.name}
+                onChange={(e) => setHelp({ ...help, name: e.target.value })}
                 fullWidth
                 className="mb-4"
               />
               <Input
                 label="Email"
                 placeholder="Enter your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={help.email}
+                onChange={(e) => setHelp({ ...help, email: e.target.value })}
                 fullWidth
                 className="mb-4"
                 type="email"
               />
               <Button
                 onClick={handleSubmit}
-                disabled={!email.trim() || !name.trim()}
+                disabled={!help.name.trim() || !help.email.trim()}
               >
                 Submit
               </Button>
-              {/* goback to step 1 button */}
               <Button variant="faded" onClick={() => setStep(1)}>
                 Go back
               </Button>
