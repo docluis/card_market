@@ -1,6 +1,6 @@
 # Card Market
 
-Example web application with nginx, React, Next JS + Next UI, Flask and MariaDB.
+Example web application with nginx, React, Next JS + Next UI, Tailwind CSS, Flask and MariaDB.
 
 ## How to Run
 ```bash
