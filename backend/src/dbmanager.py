@@ -81,6 +81,21 @@ class DBManager:
             )
             cursor._connection.commit()
 
+        with self.get_cursor() as cursor:
+            cursor.execute("DROP TABLE IF EXISTS help_messages")
+
+            cursor.execute(
+                """
+                CREATE TABLE help_messages (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    message TEXT,
+                    email VARCHAR(255),
+                    name VARCHAR(255)
+                )
+                """
+            )
+            cursor._connection.commit()
+
     def query_cards(self, page, size):
         with self.get_cursor() as cursor:
             cursor.execute(
@@ -202,3 +217,16 @@ class DBManager:
                 (username,),
             )
             return cursor.fetchone()
+        
+
+    def create_help_message(self, message, email, name):
+        with self.get_cursor() as cursor:
+            cursor.execute(
+                """
+                INSERT INTO help_messages (message, email, name)
+                VALUES (%s, %s, %s)
+                """,
+                (message, email, name),
+            )
+            cursor._connection.commit()
+            return True

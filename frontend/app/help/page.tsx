@@ -15,6 +15,7 @@ import { title } from "@/components/primitives";
 
 export default function HelpPage() {
   const [step, setStep] = useState(1);
+  const [message, setMessage] = useState("");
 
   const emptyHelp: Help = {
     message: "",
@@ -32,9 +33,25 @@ export default function HelpPage() {
   const handleSubmit = () => {
     // TODO: send help request
     console.log({ help });
-    setHelp(emptyHelp);
-    setStep(1);
-    alert("Form submitted!");
+    
+    fetch("/api/help", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(help),
+    }).then((response) => {
+      if (response.status === 201) {
+        setHelp(emptyHelp);
+        setStep(1);
+      }
+      return response.json();
+    }).then((data) => {
+      setMessage(data.message);
+    }
+    ).catch((error) => {
+      console.error("Error sending help request:", error);
+    });
   };
 
   return (
@@ -94,6 +111,8 @@ export default function HelpPage() {
           contact us
         </p>
       </div>
+      {/* display message here */}
+      {message && <p className="text-center text-red-500">{message}</p>}
     </div>
   );
 }
