@@ -31,3 +31,9 @@ export type Contact = {
   phone_number: string;
   message: string;
 };
+
+export type Help = {
+  name: string;
+  email: string;
+  message: string;
+};

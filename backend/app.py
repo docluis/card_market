@@ -191,6 +191,17 @@ def update_user(current_user):
     else:
         return {"message": "User update failed"}, 400
 
+@server.route("/help", methods=["POST"])
+def create_help_message():
+    global conn
+    conn = connect_db(conn)
+    data = request.json
+    success = conn.create_help_message(data["message"], data["email"], data["name"])
+    if success:
+        return {"message": "Help message created"}, 201
+    else:
+        return {"message": "Help message creation failed"}, 400
+
 
 if __name__ == "__main__":
     server.run()
